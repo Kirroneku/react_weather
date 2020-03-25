@@ -4,7 +4,8 @@ class App extends Component {
     state = {
         lat: 0,
         lon: 0,
-        data: null
+        data: null,
+        denotation: "c"
     }
 
     componentDidMount() {
@@ -43,14 +44,31 @@ class App extends Component {
         console.log(json);
     }
 
+    celciusToFarenheit = (degrees) => {
+        return degrees * 1.8 + 32;
+    }
+
+    swapDenotation = () => {
+        this.setState({
+            denotation: this.state.denotation == 'c'? 'f': 'c'
+        })
+    }
+
     render() {
         let json = this.state.data;
         let info = null;
         if( json != null ) {
             console.log('TRUE')
             let weather = json.weather[0];
+
             let temp = json.main.temp;
+            if( this.state.denotation == 'f' ) {
+                temp = this.celciusToFarenheit(temp);
+            }
+            temp += "°" + this.state.denotation;
+
             let weatherIcon = <img src={weather.icon} ></img>;
+
             info = <div>
                 {weather.main} 
                 <br/>
@@ -58,7 +76,7 @@ class App extends Component {
                 <br/>
                 {weatherIcon} 
                 <br/>
-                {temp} celcius
+                {temp} 
             </div>
         }
 
@@ -66,12 +84,12 @@ class App extends Component {
 
         return (
             <div>
-                {/* <button onClick={this.getLocation}>Location for Weather!</button> */}
                 <p> Location: {this.state.location}</p>
                 <p> Your current coordinates are... </p>
                 <p> Latitude: {this.state.lat} </p>
                 <p> Longitude: {this.state.lon}</p>
                 {info}
+                <button onClick={this.swapDenotation}> Display in {this.state.denotation == 'c'? "Farenheit": "Celcius"}</button>
             </div>
         )
     }
